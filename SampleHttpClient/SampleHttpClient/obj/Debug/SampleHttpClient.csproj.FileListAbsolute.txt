@@ -1,0 +1,12 @@
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\bin\Debug\SampleHttpClient.exe.config
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\bin\Debug\SampleHttpClient.exe
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\bin\Debug\SampleHttpClient.pdb
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\bin\Debug\Newtonsoft.Json.dll
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\bin\Debug\System.Net.Http.Formatting.dll
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\bin\Debug\Newtonsoft.Json.xml
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\bin\Debug\System.Net.Http.Formatting.xml
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\obj\Debug\SampleHttpClient.csprojAssemblyReference.cache
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\obj\Debug\SampleHttpClient.csproj.CoreCompileInputs.cache
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\obj\Debug\SampleHttpClient.csproj.CopyComplete
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\obj\Debug\SampleHttpClient.exe
+C:\Users\HP\source\repos\SampleHttpClient\SampleHttpClient\obj\Debug\SampleHttpClient.pdb

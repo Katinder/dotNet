@@ -1,0 +1,12 @@
+C:\Users\HP\source\repos\SortJSON\SortJSON\bin\Debug\SortJSON.exe.config
+C:\Users\HP\source\repos\SortJSON\SortJSON\bin\Debug\SortJSON.exe
+C:\Users\HP\source\repos\SortJSON\SortJSON\bin\Debug\SortJSON.pdb
+C:\Users\HP\source\repos\SortJSON\SortJSON\bin\Debug\MySql.Data.dll
+C:\Users\HP\source\repos\SortJSON\SortJSON\bin\Debug\Newtonsoft.Json.dll
+C:\Users\HP\source\repos\SortJSON\SortJSON\bin\Debug\MySql.Data.xml
+C:\Users\HP\source\repos\SortJSON\SortJSON\bin\Debug\Newtonsoft.Json.xml
+C:\Users\HP\source\repos\SortJSON\SortJSON\obj\Debug\SortJSON.csprojAssemblyReference.cache
+C:\Users\HP\source\repos\SortJSON\SortJSON\obj\Debug\SortJSON.csproj.CoreCompileInputs.cache
+C:\Users\HP\source\repos\SortJSON\SortJSON\obj\Debug\SortJSON.csproj.CopyComplete
+C:\Users\HP\source\repos\SortJSON\SortJSON\obj\Debug\SortJSON.exe
+C:\Users\HP\source\repos\SortJSON\SortJSON\obj\Debug\SortJSON.pdb

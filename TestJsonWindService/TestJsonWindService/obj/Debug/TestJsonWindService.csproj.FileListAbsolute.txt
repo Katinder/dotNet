@@ -1,0 +1,9 @@
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\bin\Debug\TestJsonWindService.exe.config
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\bin\Debug\TestJsonWindService.exe
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\bin\Debug\TestJsonWindService.pdb
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\obj\Debug\TestJsonWindService.csprojAssemblyReference.cache
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\obj\Debug\TestJsonWindService.ProjectInstaller.resources
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\obj\Debug\TestJsonWindService.csproj.GenerateResource.cache
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\obj\Debug\TestJsonWindService.csproj.CoreCompileInputs.cache
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\obj\Debug\TestJsonWindService.exe
+C:\Users\HP\source\repos\TestJsonWindService\TestJsonWindService\obj\Debug\TestJsonWindService.pdb

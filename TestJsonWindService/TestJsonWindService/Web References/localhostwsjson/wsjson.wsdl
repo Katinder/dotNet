@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="RandomNumber">
+        <s:complexType />
+      </s:element>
+      <s:element name="RandomNumberResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RandomNumberResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TimeNow">
+        <s:complexType />
+      </s:element>
+      <s:element name="TimeNowResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TimeNowResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="HelloWorld">
+        <s:complexType />
+      </s:element>
+      <s:element name="HelloWorldResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="HelloWorldResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DoNothing">
+        <s:complexType />
+      </s:element>
+      <s:element name="DoNothingResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="RandomNumberSoapIn">
+    <wsdl:part name="parameters" element="tns:RandomNumber" />
+  </wsdl:message>
+  <wsdl:message name="RandomNumberSoapOut">
+    <wsdl:part name="parameters" element="tns:RandomNumberResponse" />
+  </wsdl:message>
+  <wsdl:message name="TimeNowSoapIn">
+    <wsdl:part name="parameters" element="tns:TimeNow" />
+  </wsdl:message>
+  <wsdl:message name="TimeNowSoapOut">
+    <wsdl:part name="parameters" element="tns:TimeNowResponse" />
+  </wsdl:message>
+  <wsdl:message name="HelloWorldSoapIn">
+    <wsdl:part name="parameters" element="tns:HelloWorld" />
+  </wsdl:message>
+  <wsdl:message name="HelloWorldSoapOut">
+    <wsdl:part name="parameters" element="tns:HelloWorldResponse" />
+  </wsdl:message>
+  <wsdl:message name="DoNothingSoapIn">
+    <wsdl:part name="parameters" element="tns:DoNothing" />
+  </wsdl:message>
+  <wsdl:message name="DoNothingSoapOut">
+    <wsdl:part name="parameters" element="tns:DoNothingResponse" />
+  </wsdl:message>
+  <wsdl:portType name="wsjsonSoap">
+    <wsdl:operation name="RandomNumber">
+      <wsdl:input message="tns:RandomNumberSoapIn" />
+      <wsdl:output message="tns:RandomNumberSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TimeNow">
+      <wsdl:input message="tns:TimeNowSoapIn" />
+      <wsdl:output message="tns:TimeNowSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="HelloWorld">
+      <wsdl:input message="tns:HelloWorldSoapIn" />
+      <wsdl:output message="tns:HelloWorldSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DoNothing">
+      <wsdl:input message="tns:DoNothingSoapIn" />
+      <wsdl:output message="tns:DoNothingSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="wsjsonSoap" type="tns:wsjsonSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RandomNumber">
+      <soap:operation soapAction="http://tempuri.org/RandomNumber" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TimeNow">
+      <soap:operation soapAction="http://tempuri.org/TimeNow" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HelloWorld">
+      <soap:operation soapAction="http://tempuri.org/HelloWorld" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DoNothing">
+      <soap:operation soapAction="http://tempuri.org/DoNothing" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="wsjsonSoap12" type="tns:wsjsonSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RandomNumber">
+      <soap12:operation soapAction="http://tempuri.org/RandomNumber" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TimeNow">
+      <soap12:operation soapAction="http://tempuri.org/TimeNow" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="HelloWorld">
+      <soap12:operation soapAction="http://tempuri.org/HelloWorld" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DoNothing">
+      <soap12:operation soapAction="http://tempuri.org/DoNothing" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="wsjson">
+    <wsdl:port name="wsjsonSoap" binding="tns:wsjsonSoap">
+      <soap:address location="https://localhost:44327/wsjson.asmx" />
+    </wsdl:port>
+    <wsdl:port name="wsjsonSoap12" binding="tns:wsjsonSoap12">
+      <soap12:address location="https://localhost:44327/wsjson.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

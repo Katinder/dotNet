@@ -1,0 +1,10 @@
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\bin\Debug\QueryTestProject.exe.config
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\bin\Debug\QueryTestProject.exe
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\bin\Debug\QueryTestProject.pdb
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\bin\Debug\MySql.Data.dll
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\bin\Debug\MySql.Data.xml
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\obj\Debug\QueryTestProject.csprojAssemblyReference.cache
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\obj\Debug\QueryTestProject.csproj.CoreCompileInputs.cache
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\obj\Debug\QueryTestProject.csproj.CopyComplete
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\obj\Debug\QueryTestProject.exe
+C:\Users\HP\source\repos\QueryTestProject\QueryTestProject\obj\Debug\QueryTestProject.pdb
