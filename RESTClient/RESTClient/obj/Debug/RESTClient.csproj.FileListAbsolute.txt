@@ -1,0 +1,12 @@
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\RESTClient.exe.config
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\RESTClient.exe
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\RESTClient.pdb
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\Newtonsoft.Json.dll
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\System.Net.Http.Formatting.dll
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\Newtonsoft.Json.xml
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\System.Net.Http.Formatting.xml
+C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.csprojAssemblyReference.cache
+C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.csproj.CoreCompileInputs.cache
+C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.csproj.CopyComplete
+C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.exe
+C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.pdb
