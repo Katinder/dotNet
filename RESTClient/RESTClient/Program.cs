@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using System.Data;
 
 //add nuget package
 //Install-Package Microsoft.AspNet.WebApi.Client
@@ -27,6 +28,36 @@ namespace RESTClient
 
         }
 
+        //print function taken from SO
+        static void print_results(DataTable data)
+        {
+            Console.WriteLine();
+            Dictionary<string, int> colWidths = new Dictionary<string, int>();
+
+            foreach (DataColumn col in data.Columns)
+            {
+                Console.Write(col.ColumnName);
+                var maxLabelSize = data.Rows.OfType<DataRow>()
+                        .Select(m => (m.Field<object>(col.ColumnName)?.ToString() ?? "").Length)
+                        .OrderByDescending(m => m).FirstOrDefault();
+
+                colWidths.Add(col.ColumnName, maxLabelSize);
+                for (int i = 0; i < maxLabelSize - col.ColumnName.Length + 10; i++) Console.Write(" ");
+            }
+
+            Console.WriteLine();
+
+            foreach (DataRow dataRow in data.Rows)
+            {
+                for (int j = 0; j < dataRow.ItemArray.Length; j++)
+                {
+                    Console.Write(dataRow.ItemArray[j]);
+                    for (int i = 0; i < colWidths[data.Columns[j].ColumnName] - dataRow.ItemArray[j].ToString().Length + 10; i++) Console.Write(" ");
+                }
+                Console.WriteLine();
+            }
+        }
+
         static async Task Main(string[] args)
         {
             
@@ -43,13 +74,17 @@ namespace RESTClient
                 {
                     Console.WriteLine("Success");
 
-                    var readTask = await responseTask.Content.ReadAsAsync<List<DBclass>>();
-                    Console.WriteLine(readTask);
+                    DataTable dt = new DataTable();
 
-                     foreach(var record in readTask)
-                     {
-                        showProduct(record);
-                     }
+                    //var readTask = await responseTask.Content.ReadAsAsync<DataTable>();
+                    var readTask = await responseTask.Content.ReadAsAsync<List<EstimateClass>>();
+                    //Console.WriteLine(readTask.Rows.Count);
+                    Console.WriteLine(readTask);
+                    //print_results(readTask);
+
+                    //delete entries from tables
+                    //create array of pks to delete
+
                 }
 
                 else
