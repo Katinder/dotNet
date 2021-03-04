@@ -5,6 +5,7 @@ using System.Web;
 
 namespace SampleRestApi
 {
+
     public class EstimateClass
     {
         public string ESTIMATE_CODE { get; set; }
@@ -47,4 +48,7 @@ namespace SampleRestApi
 
     }
 
+
+
 }
+
