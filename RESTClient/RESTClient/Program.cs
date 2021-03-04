@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Data;
+using Z.BulkOperations;
+using MySql.Data.MySqlClient;
 
 //add nuget package
 //Install-Package Microsoft.AspNet.WebApi.Client
@@ -15,22 +17,35 @@ namespace RESTClient
 {
     class Program
     {
-        static HttpClient client = new HttpClient();
         static string localDate = "20210215160000"; //"2021-01-28 13:00:00";
         static string locstring = "ALL";
 
-        static void insertDataTable(DataTable dt)
-        {
+        static HttpClient client = new HttpClient();
+        
+        private static readonly string connectionString = "server=127.0.0.1;port=3306;uid=root;pwd=root";
+        private static MySqlConnection conn = new MySqlConnection(connectionString);
 
-        }
-        static void showProduct(DBclass record)
+        static void insertDataTable(DataTable dt, string tableName)
         {
-            Console.WriteLine($"Log-id: {record.log_id}\n" +
-                $"pk:{record.c1_pk}\n" +
-                $"name:{record.c2_name}\n" +
-                $"amount:{record.c2_name}\n" +
-                $"Last updates at:{record.c4_updated_at}" +
-                $"operation:{record.Operation}\n");
+            try
+            {
+                if(OpenConnection()==true)
+                {
+                    using (BulkOperation bulk = new BulkOperation(conn))
+                    {
+                
+                        bulk.DestinationTableName = tableName;
+
+                        bulk.BulkInsert(dt);
+                    }
+                    CloseConnection();
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Ex raised at BulkInsert: " + ex.Message);
+            }
+           
 
         }
 
@@ -69,7 +84,6 @@ namespace RESTClient
 
         //client.BaseAddress= new Uri("https://localhost:44366/api/");
         //client.DefaultRequestHeaders.Accept.Clear();
-
         //Uri url = new Uri(client.BaseAddress, $"Date?dateString={localDate}");
         
             try
@@ -80,19 +94,10 @@ namespace RESTClient
                 {
                     Console.WriteLine("Success");
 
-                    //DataTable dt = new DataTable();
-
-                    var readTask = await responseTask.Content.ReadAsAsync<DataTable>();
-                    //var readTask = await responseTask.Content.ReadAsAsync<List<EstimateClass>>();
-                    //Console.WriteLine(readTask.Rows.Count);
-                    //Console.WriteLine(readTask);
-                    //print_results(readTask);
-
-                    //delete entries from table
-                    //create array of pks to delete
-
+                    var dtResponse1 = await responseTask.Content.ReadAsAsync<DataTable>();
+                    
                     string est_codes = "";
-                    foreach (DataRow row in readTask.Rows)
+                    foreach (DataRow row in dtResponse1.Rows)
                     {
                         est_codes= est_codes+ "&pk=" +((string)row["ESTIMATE_CODE"]);
                         //Console.WriteLine((string)row["ESTIMATE_CODE"]);
@@ -102,30 +107,29 @@ namespace RESTClient
                     Console.WriteLine(est_codes);
 
                     /*
-                    List<string> estimate_codes = new List<string>(readTask.Rows.Count);
-                    foreach (DataRow row in readTask.Rows)
-                        estimate_codes.Add((string)row["ESTIMATE_CODE"]);
+                        List<string> estimate_codes = new List<string>(readTask.Rows.Count);
+                        foreach (DataRow row in readTask.Rows)
+                            estimate_codes.Add((string)row["ESTIMATE_CODE"]);
 
-                    Console.WriteLine(estimate_codes[7]);
+                        Console.WriteLine(estimate_codes[7]);
 
-                    /* //Post request attempt
+                        /* //Post request attempt
 
-                    try
-                    {
-                        var responsePost = await client.PostAsJsonAsync("https://localhost:44366/api/Date", estimate_codes).ConfigureAwait(false);
-
-                        if(responsePost.IsSuccessStatusCode)
+                        try
                         {
-                            var resultPost = await responsePost.Content.ReadAsAsync<DataTable>();
-                            Console.WriteLine(resultPost);
+                            var responsePost = await client.PostAsJsonAsync("https://localhost:44366/api/Date", estimate_codes).ConfigureAwait(false);
+
+                            if(responsePost.IsSuccessStatusCode)
+                            {
+                                var resultPost = await responsePost.Content.ReadAsAsync<DataTable>();
+                                Console.WriteLine(resultPost);
+                            }
+
                         }
-
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
                     */
 
                     try
@@ -136,13 +140,12 @@ namespace RESTClient
                         {
                             Console.WriteLine("Success");
 
-                            //DataTable dt = new DataTable();
-
-                            var readTask2 = await responseTask2.Content.ReadAsAsync<DataTable>();
-                            //var readTask = await responseTask.Content.ReadAsAsync<List<EstimateClass>>();
-                            //Console.WriteLine(readTask.Rows.Count);
-                            //Console.WriteLine(readTask);
-                            print_results(readTask2);
+                            var dtResponse2 = await responseTask2.Content.ReadAsAsync<DataTable>();
+                            
+                            insertDataTable(dtResponse1, "schema1.local_estimate_master");
+                            Console.WriteLine("Table 1 copied to db");
+                            insertDataTable(dtResponse2, "schema1.local_estimate_item_details");
+                            Console.WriteLine("Table 2 copied to db");
                         }
                     }
                     catch (Exception ex)
@@ -165,16 +168,42 @@ namespace RESTClient
             Console.ReadKey();
         
         }
+
+        private static bool CloseConnection()
+        {
+            try
+            {
+                conn.Close();
+                //Console.WriteLine("Connection Closed.");
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+                //Console.WriteLine(ex.Message);
+                //Console.ReadKey();
+                return false;
+            }
+        }
+
+        private static bool OpenConnection()
+        {
+            try
+            {
+                conn.Open();
+                //Console.WriteLine("Connection Opened.");
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+                //Console.WriteLine(ex.Message);
+                //Console.ReadKey();
+                return false;
+            }
+        }
+
     }
 }
 
-//get only estimate codes
-/*
- List<string> estimate_codes = new List<string>(dt.Rows.Count);
-string estimatecodes= new string();
-foreach(DataRow row in dt.Rows)
-    estimate_codes.Add((string)row["ESTIMATE_CODE"]);
-*/
 
 /* 
  * https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/calling-a-web-api-from-a-net-client

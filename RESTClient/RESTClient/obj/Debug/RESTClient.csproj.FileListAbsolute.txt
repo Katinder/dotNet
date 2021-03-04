@@ -10,3 +10,7 @@ C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.csproj.CoreC
 C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.csproj.CopyComplete
 C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.exe
 C:\Users\HP\source\repos\RESTClient\RESTClient\obj\Debug\RESTClient.pdb
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\MySql.Data.dll
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\Z.BulkOperations.dll
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\MySql.Data.xml
+C:\Users\HP\source\repos\RESTClient\RESTClient\bin\Debug\Z.BulkOperations.xml
