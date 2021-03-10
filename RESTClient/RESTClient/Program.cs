@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using System.Data;
 using Z.BulkOperations;
 using MySql.Data.MySqlClient;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 //add nuget package
 //Install-Package Microsoft.AspNet.WebApi.Client
@@ -17,7 +19,7 @@ namespace RESTClient
 {
     class Program
     {
-        static string localDate = "20210215160000"; //"2021-01-28 13:00:00";
+        static string localDate = "20210202160000"; //"2021-01-28 13:00:00";
         static string locstring = "ALL";
 
         static HttpClient client = new HttpClient();
@@ -25,6 +27,7 @@ namespace RESTClient
         private static readonly string connectionString = "server=127.0.0.1;port=3306;uid=root;pwd=root";
         private static MySqlConnection conn = new MySqlConnection(connectionString);
 
+        
         static void insertDataTable(DataTable dt, string tableName)
         {
             try
@@ -35,8 +38,9 @@ namespace RESTClient
                     {
                 
                         bulk.DestinationTableName = tableName;
-
-                        bulk.BulkInsert(dt);
+                        //bulk.BulkDelete(dt);
+                        //bulk.BulkInsert(dt);
+                        bulk.BulkMerge(dt);
                     }
                     CloseConnection();
                 }
@@ -44,8 +48,7 @@ namespace RESTClient
             catch(Exception ex)
             {
                 Console.WriteLine("Ex raised at BulkInsert: " + ex.Message);
-            }
-           
+            }           
 
         }
 
@@ -79,6 +82,7 @@ namespace RESTClient
             }
         }
 
+
         static async Task Main(string[] args)
         {
 
@@ -88,14 +92,48 @@ namespace RESTClient
         
             try
             {
-                var responseTask = await client.GetAsync($"https://localhost:44366/api/Date?timestamp={localDate}&loc={locstring}");
+                var responseTask = await client.GetAsync($"https://localhost:44366/api/Date?timestamp={localDate}");//&loc={locstring}");
 
                 if (responseTask.IsSuccessStatusCode)
                 {
                     Console.WriteLine("Success");
 
-                    var dtResponse1 = await responseTask.Content.ReadAsAsync<DataTable>();
-                    
+                    string s = await responseTask.Content.ReadAsStringAsync();
+
+                    JArray jArray = JArray.Parse(s);
+
+                    var jsonArray = new JArray();
+                    JArray newDetailsJarray = new JArray();
+                    foreach (JObject row in jArray)
+                    {
+                        var newRow = new JObject();
+                        foreach (var column in row.Properties())
+                        {
+                            // include values column wise
+                            if (column.Name != "details")
+                                newRow.Add(column.Name, column.Value);
+
+                            else if (column.Name == "details" && column.Value != null)
+                            {
+                                foreach (JObject detailsRow in column.Value)
+                                {
+                                    var newDetailsRow = new JObject();
+                                    foreach (var detailsCol in detailsRow.Properties())
+                                    {
+                                        newDetailsRow.Add(detailsCol.Name, detailsCol.Value);
+                                    }
+                                    newDetailsJarray.Add(newDetailsRow);
+                                }
+                            }
+                        }
+                        jsonArray.Add(newRow);
+                    }
+
+                    DataTable dt_master = JsonConvert.DeserializeObject<DataTable>(jsonArray.ToString());
+                    DataTable dt_details = JsonConvert.DeserializeObject<DataTable>(newDetailsJarray.ToString());
+
+
+                    /*
                     string est_codes = "";
                     foreach (DataRow row in dtResponse1.Rows)
                     {
@@ -131,27 +169,82 @@ namespace RESTClient
                             Console.WriteLine(ex);
                         }
                     */
-
+                    /*
                     try
                     {
                         var responseTask2 = await client.GetAsync($"https://localhost:44366/api/Date?{est_codes}");
-
+                        int count = 0;
                         if (responseTask.IsSuccessStatusCode)
                         {
                             Console.WriteLine("Success");
 
                             var dtResponse2 = await responseTask2.Content.ReadAsAsync<DataTable>();
-                            
-                            insertDataTable(dtResponse1, "schema1.local_estimate_master");
-                            Console.WriteLine("Table 1 copied to db");
-                            insertDataTable(dtResponse2, "schema1.local_estimate_item_details");
-                            Console.WriteLine("Table 2 copied to db");
+
+                            foreach (DataRow row in dtResponse2.Rows)
+                            {
+                                count++;
+                            }
+
+                            dtResponse1.Columns.Add("details", typeof(DataTable));
+
+                            foreach (DataRow row in dtResponse1.Rows)
+                            {
+                                //DataRow foundRow = dt2.Rows.Find(row["ESTIMATE_CODE"]);
+                                Console.WriteLine((string)row["ESTIMATE_CODE"]);
+                                DataRow[] foundRows = dtResponse2.Select($"estimate_code = '{((string)row["ESTIMATE_CODE"])}'");
+
+                                string jsonFoundRows = "";
+
+                                if (foundRows.Length > 0)
+                                {
+                                    DataTable cloned = dtResponse2.Clone();
+                                    count = 0;
+                                    foreach (DataRow r in foundRows)
+                                    {
+                                        count++;
+                                        //Console.WriteLine("{0}, {1}", r[0], r[1]);
+                                        cloned.Rows.Add(r.ItemArray);
+                                    }
+                                    //Console.WriteLine(count);
+                                    
+                                    //convert rows to json
+                                    jsonFoundRows = JsonConvert.SerializeObject(cloned);
+
+                                    //Console.WriteLine(jsonFoundRows);
+                                    //Console.WriteLine(cloned.Rows.Count);
+                                    row["details"] =cloned;
+                                }
+                                
+
+                               
+                            }
+
+                            string j = JsonConvert.SerializeObject(dtResponse1);
+
+                            Console.WriteLine(j);
+                    
+                    //Console.WriteLine("db2 count= {0}", count);
+                    //insertDataTable(dtResponse1, "schema1.local_estimate_master");
+                    //Console.WriteLine("Table 1 copied to db");
+                    //insertDataTable(dtResponse2, "schema1.local_estimate_item_details");
+                    //Console.WriteLine("Table 2 copied to db");
+
+                    
                         }
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                     }
+                    */
+                    // string j = JsonConvert.SerializeObject(dtResponse1);
+
+                    //                    Console.WriteLine(j);
+
+                    insertDataTable(dt_master, "schema1.local_estimate_master");
+                    Console.WriteLine("Table 1 copied to db");
+                    insertDataTable(dt_details, "schema1.local_estimate_item_details");
+                    Console.WriteLine("Table 2 copied to db");
 
                 }
 

@@ -47,7 +47,89 @@ namespace SampleRestApi.Controllers
 
                         CloseConnection();
 
-                        string sJSONResponse = JsonConvert.SerializeObject(dt);
+                        //DataTable dtFinal = dt.Copy();
+                        //add new column for json
+                        dt.Columns.Add("details", typeof(DataTable)).AllowDBNull = true;
+                        
+                        //dt.Columns.Add("dt2Rows", typeof(String));
+                        //for each row in dt, find the rows in second database and convert to json and add to column to dt_final
+                        //pros: simple
+                        //cons: search again n again => comlexity=O(mxN)
+
+                        //for each row in dt, find rows in dt2 
+                        //pros: complexity=O(mxn)
+                        //cons: ..
+
+                        //GET TABLE 2
+
+                        //GET ESTIMATE_CODES IN DT1
+                        string estimate_code_string = "";
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            estimate_code_string += ",\"" + (string)row["ESTIMATE_CODE"] + "\""; 
+                        }
+
+                        estimate_code_string = estimate_code_string.Remove(0, 1);
+
+                        //QUERY SQLDATABSE FOR DT2
+
+                        string query2 = "";
+
+                        query2 = string.Format("SELECT * FROM masterdb.estimate_item_details where ESTIMATE_CODE IN ({0})", estimate_code_string);
+
+                        var dt2 = new DataTable();
+
+                        if (OpenConnection() == true)
+                        {
+                            MySqlCommand cmd2 = new MySqlCommand(query2, conn);
+                            
+                            MySqlDataReader queryOp2 = cmd2.ExecuteReader();
+
+                            dt2.Load(queryOp2);
+
+                            queryOp2.Close();
+
+                            CloseConnection();
+                        }
+
+                        
+
+                        //FIND ESTIMATE DETAILS FROM DT2 ACC TO DT1
+                        foreach (DataRow row in dt.Rows)
+                        {
+
+                            DataRow[] foundRows = dt2.Select($"estimate_code = '{((string)row["ESTIMATE_CODE"])}'");
+
+                            string jsonFoundRows = "";
+
+                            if (foundRows.Length > 0)
+                            {
+                                DataTable cloned = dt2.Clone();
+
+                                foreach (DataRow r in foundRows)
+                                {
+
+                                    //Console.WriteLine("{0}, {1}", r[0], r[1]);
+                                    cloned.Rows.Add(r.ItemArray);
+                                }
+
+                                //convert rows to json
+                                jsonFoundRows = JsonConvert.SerializeObject(cloned);
+
+                                //Console.WriteLine(jsonFoundRows);
+                                //Console.WriteLine(cloned.Rows.Count);
+                                row["details"] = cloned;
+                            }
+
+                            else
+                            {
+                                row["details"] = null;
+                            }
+
+                            
+                        }
+                            
+                       string sJSONResponse = JsonConvert.SerializeObject(dt);
 
                         //create response
                         var response = new HttpResponseMessage(HttpStatusCode.OK);
@@ -82,6 +164,7 @@ namespace SampleRestApi.Controllers
             }
         }
         
+        /*
         //get timestamp and location
         public HttpResponseMessage GetOverview(string timestamp, string loc)
         {
@@ -165,7 +248,7 @@ namespace SampleRestApi.Controllers
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
-
+        */
         //get details using estimade_codes
         public HttpResponseMessage GetDetails([FromUri]string[] pk)
         {
