@@ -1,0 +1,14 @@
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\EstimateRESTClient.exe.config
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\EstimateRESTClient.exe
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\EstimateRESTClient.pdb
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\MySql.Data.dll
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\Newtonsoft.Json.dll
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\Z.BulkOperations.dll
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\MySql.Data.xml
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\Newtonsoft.Json.xml
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\bin\Debug\Z.BulkOperations.xml
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\obj\Debug\EstimateRESTClient.csprojAssemblyReference.cache
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\obj\Debug\EstimateRESTClient.csproj.CoreCompileInputs.cache
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\obj\Debug\EstimateRESTClient.csproj.CopyComplete
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\obj\Debug\EstimateRESTClient.exe
+C:\Users\HP\source\repos\EstimateRESTClient\EstimateRESTClient\obj\Debug\EstimateRESTClient.pdb
