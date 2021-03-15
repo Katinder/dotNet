@@ -32,10 +32,11 @@ namespace EstimateRESTClient
             try
             {
                 //-----------------GET LATEST TIMESTAMP FROM TABLE----------
-                string timestamp = getLastUpdatedTime("schema1.local_last_date");
+                string timestamp = getLastUpdatedTime("schema1.local_last_date"); //dd-MM-yyyy HH:mm:ss
                 //convert to the right format
-                timestamp=DateTime.ParseExact(timestamp, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                timestamp=DateTime.ParseExact("01-01-2021 00:00:00", "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
                 Console.WriteLine(timestamp);
+
 
                 //-----------------CALL API & GET RESPONSE-------------------------
                 //get response form GET method
@@ -52,61 +53,83 @@ namespace EstimateRESTClient
                     //parse the string into a JArray object
                     JArray jArray = JArray.Parse(s);
 
-
-                    //------------READ JSON INTO TWO SEPARATE DATATABLES--------------
-                    
-                    JArray newMasterJarray = new JArray();
-                    JArray newDetailsJarray = new JArray();
-
-                    foreach (JObject masterRow in jArray) //iterate over each row
+                    if(jArray.Count>0)
                     {
-                        var newMasterRow = new JObject();
-                        foreach (var masterCol in masterRow.Properties()) //iterate over cols in the row
+                        //------------READ JSON INTO TWO SEPARATE DATATABLES--------------
+                    
+                        JArray newMasterJarray = new JArray();
+                        JArray newDetailsJarray = new JArray();
+
+                        foreach (JObject masterRow in jArray) //iterate over each row
                         {
-                            // include values column wise
-
-                            //if not "details" col, then add (key,value) to the master row
-                            if (masterCol.Name != "details")
-                                newMasterRow.Add(masterCol.Name, masterCol.Value);
-
-                            //if "details" col, then add all rows to details JArray
-                            else if (masterCol.Name == "details" && masterCol.Value != null)
+                            var newMasterRow = new JObject();
+                            foreach (var masterCol in masterRow.Properties()) //iterate over cols in the row
                             {
-                                foreach (JObject detailsRow in masterCol.Value)
+                                // include values column wise
+
+                                //if not "details" col, then add (key,value) to the master row
+                                /*if ((masterCol.Name == "ESTIMATE_SANCTION_DATE") && (masterCol.Value!= null)) //02/09/2011 00:00:00
                                 {
-                                    var newDetailsRow = new JObject();
-                                    foreach (var detailsCol in detailsRow.Properties())
+                                    Console.WriteLine(masterCol.Value.ToString());
+                                    string ts = DateTime.ParseExact(masterCol.Value.ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                                    newMasterRow.Add(masterCol.Name, ts);
+                                }
+
+                                else*/ 
+                                if (masterCol.Name != "details")
+                                {
+                                    newMasterRow.Add(masterCol.Name, masterCol.Value);
+                                    Console.WriteLine(masterCol.Name + masterCol.Value);
+                                }
+
+                                //if "details" col, then add all rows to details JArray
+                                else if (masterCol.Name == "details" && masterCol.Value != null)
+                                {
+                                    foreach (JObject detailsRow in masterCol.Value)
                                     {
-                                        newDetailsRow.Add(detailsCol.Name, detailsCol.Value);
+                                        var newDetailsRow = new JObject();
+                                        foreach (var detailsCol in detailsRow.Properties())
+                                        {
+                                            newDetailsRow.Add(detailsCol.Name, detailsCol.Value);
+                                        }
+                                        newDetailsJarray.Add(newDetailsRow);
                                     }
-                                    newDetailsJarray.Add(newDetailsRow);
                                 }
                             }
+                            newMasterJarray.Add(newMasterRow);
                         }
-                        newMasterJarray.Add(newMasterRow);
+
+                        //deserialise JArrays to Data Tables
+                        DataTable dt_master = JsonConvert.DeserializeObject<DataTable>(newMasterJarray.ToString());
+                        DataTable dt_details = JsonConvert.DeserializeObject<DataTable>(newDetailsJarray.ToString());
+
+                        //print datatables for verification
+                        print_results(dt_master);
+                        //print_results(dt_details);
+
+                    
+                        if (dt_master.Rows.Count > 0)
+                        {
+                            //get latest date from master datatable
+                            var last_DT_UPDATED = (dt_master.Select("DT_UPDATED=MAX(DT_UPDATED)").First())["DT_UPDATED"].ToString();
+                            last_DT_UPDATED = DateTime.ParseExact(last_DT_UPDATED, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                            Console.WriteLine(last_DT_UPDATED);
+                            //insert date to date table
+                            insertDateDb(last_DT_UPDATED, "schema1.local_last_date");
+
+                            //insert datatbles to database tables
+                            insertDataTable(dt_master, "schema1.local_estimate_master");
+                            Console.WriteLine("Table 1 copied to db");
+                            insertDataTable(dt_details, "schema1.local_estimate_item_details");
+                            Console.WriteLine("Table 2 copied to db");
+                        }
+
                     }
 
-                    //deserialise JArrays to Data Tables
-                    DataTable dt_master = JsonConvert.DeserializeObject<DataTable>(newMasterJarray.ToString());
-                    DataTable dt_details = JsonConvert.DeserializeObject<DataTable>(newDetailsJarray.ToString());
-
-                    //print datatables for verification
-                    //print_results(dt_master);
-                    //print_results(dt_details);
-
-                    //get latest date from master datatable
-                    var last_DT_UPDATED = (dt_master.Select("DT_UPDATED=MAX(DT_UPDATED)").First())["DT_UPDATED"].ToString();
-                    last_DT_UPDATED = DateTime.ParseExact(last_DT_UPDATED, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                    Console.WriteLine(last_DT_UPDATED);
-
-                    //insert datatbles to database tables
-                    insertDataTable(dt_master, "schema1.local_estimate_master");
-                    Console.WriteLine("Table 1 copied to db");
-                    insertDataTable(dt_details, "schema1.local_estimate_item_details");
-                    Console.WriteLine("Table 2 copied to db");
-
-                    //insert date to date table
-                    insertDateDb(last_DT_UPDATED, "schema1.local_last_date");
+                    else
+                    {
+                        Console.WriteLine("No new entries found");
+                    }
                 }
 
                 else

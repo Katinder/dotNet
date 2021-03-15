@@ -23,32 +23,34 @@ namespace EstimateRESTApi.Controllers
             DateTime dateValue;
 
             ///check if a date logic
-            if (DateTime.TryParseExact(timestamp, "yyyyMMddHHmmss", new CultureInfo("en-US"), DateTimeStyles.None, out dateValue))
+            if (DateTime.TryParseExact(timestamp, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateValue))
             {
                 
                 string masterQuery = string.Format("SELECT * FROM masterdb.estimate_master where DATE_FORMAT(dt_updated, '%Y%m%d%H%i%s')>='{0}'", timestamp);
                 
                 //sql logic
 
-                if (OpenConnection() == true)
+ 
+                try
                 {
-                    MySqlCommand cmd = new MySqlCommand(masterQuery, conn);
                     var dt1 = new DataTable();
 
-                    try
+                    if (OpenConnection() == true)
                     {
+                        MySqlCommand cmd = new MySqlCommand(masterQuery, conn);
                         MySqlDataReader masterQueryOp = cmd.ExecuteReader();
                         dt1.Load(masterQueryOp);
                         masterQueryOp.Close();
                         CloseConnection();
+                    }
 
-                        //add new column for details json
-                        dt1.Columns.Add("details", typeof(DataTable)).AllowDBNull = true;
+                    //add new column for details json
+                    dt1.Columns.Add("details", typeof(DataTable)).AllowDBNull = true;
 
+                    //-------------------GET TABLE 2--------------------
 
-
-                        //-------------------GET TABLE 2--------------------
-
+                    if (dt1.Rows.Count > 0)
+                    {
                         //get estimate_codes from dt1
                         string estimate_code_string = "";
                         foreach (DataRow row in dt1.Rows)
@@ -106,37 +108,34 @@ namespace EstimateRESTApi.Controllers
 
 
                         }
-
-                        //------------SERIALIZE & CREATE RESPONSE--------------------
-                        string sJSONResponse = JsonConvert.SerializeObject(dt1);
-
-                        //create response
-                        var response = new HttpResponseMessage(HttpStatusCode.OK);
-                        response.Content = new StringContent(sJSONResponse);
-                        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-                        return response;
-
                     }
-                    catch (MySqlException ex)
-                    {
-                        CloseConnection();
+                    //------------SERIALIZE & CREATE RESPONSE--------------------
+                    string sJSONResponse = JsonConvert.SerializeObject(dt1);
 
-                        string sJSONResponse = JsonConvert.SerializeObject(ex);
-                        //create response
-                        var response = new HttpResponseMessage(HttpStatusCode.OK);
-                        response.Content = new StringContent(sJSONResponse);
-                        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-                        return response;
-                    }
+                    //create response
+                    var response = new HttpResponseMessage(HttpStatusCode.OK);
+                    response.Content = new StringContent(sJSONResponse);
+                    response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                    return response;
 
                 }
+                catch (MySqlException ex)
+                {
+                    CloseConnection();
 
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    string sJSONResponse = JsonConvert.SerializeObject(ex);
+                    //create response
+                    var response = new HttpResponseMessage(HttpStatusCode.OK);
+                    response.Content = new StringContent(sJSONResponse);
+                    response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                    return response;
+                }
+
             }
 
-
-            else
+            else 
             {
+                //change for exception logging
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
@@ -162,27 +161,32 @@ namespace EstimateRESTApi.Controllers
                     masterQuery = string.Format("SELECT * FROM masterdb.estimate_master where location_code='{0}' and DATE_FORMAT(dt_updated, '%Y%m%d%H%i%s')>='{1}';", loc, timestamp);
                 }
 
+                //sql logic    
 
-                //sql logic
-
-                if (OpenConnection() == true)
+                try
                 {
-                    MySqlCommand cmd = new MySqlCommand(masterQuery, conn);
+                    
                     var dt1 = new DataTable();
 
-                    try
+                    if (OpenConnection() == true)
                     {
+                        MySqlCommand cmd = new MySqlCommand(masterQuery, conn);
                         MySqlDataReader masterQueryOp = cmd.ExecuteReader();
                         dt1.Load(masterQueryOp);
                         masterQueryOp.Close();
                         CloseConnection();
+                    }
+                        
+                    //add new column for details json
+                    dt1.Columns.Add("details", typeof(DataTable)).AllowDBNull = true;
 
-                        //add new column for details json
-                        dt1.Columns.Add("details", typeof(DataTable)).AllowDBNull = true;
 
+                    //-------------------GET TABLE 2--------------------
 
-                        //-------------------GET TABLE 2--------------------
-
+                    //if datatable 1 is not null
+                    if (dt1.Rows.Count > 0)
+                    {
+                       
                         //get estimate_codes from dt1
                         string estimate_code_string = "";
                         foreach (DataRow row in dt1.Rows)
@@ -209,63 +213,60 @@ namespace EstimateRESTApi.Controllers
                         }
 
 
-                        //--------------FIND ESTIMATE DETAILS FROM DT2(details) ACC TO DT1(master)-----------------
-                        foreach (DataRow row in dt1.Rows)
+                    //--------------FIND ESTIMATE DETAILS FROM DT2(details) ACC TO DT1(master)-----------------
+                    foreach (DataRow row in dt1.Rows)
+                    {
+                        //get datarow aray from dt2 where estimate code is same as in the current dt1 row
+                        DataRow[] foundRows = dt2.Select($"estimate_code = '{((string)row["ESTIMATE_CODE"])}'");
+
+                        if (foundRows.Length > 0)
                         {
-                            //get datarow aray from dt2 where estimate code is same as in the current dt1 row
-                            DataRow[] foundRows = dt2.Select($"estimate_code = '{((string)row["ESTIMATE_CODE"])}'");
+                            //get the format from dt2 
+                            //(new table required because cannot convert datarow to json directly)
+                            DataTable cloned = dt2.Clone();
 
-                            if (foundRows.Length > 0)
+                            foreach (DataRow r in foundRows)
                             {
-                                //get the format from dt2 
-                                //(new table required because cannot convert datarow to json directly)
-                                DataTable cloned = dt2.Clone();
-
-                                foreach (DataRow r in foundRows)
-                                {
-                                    //add the row to the new table
-                                    //Console.WriteLine("{0}, {1}", r[0], r[1]);
-                                    cloned.Rows.Add(r.ItemArray);
-                                }
-
-                                //copy the new table to details column of the current row
-                                row["details"] = cloned;
+                                //add the row to the new table
+                                //Console.WriteLine("{0}, {1}", r[0], r[1]);
+                                cloned.Rows.Add(r.ItemArray);
                             }
 
-                            //if no rows found in details table
-                            else
-                            {
-                                row["details"] = null;
-                            }
-
-
+                            //copy the new table to details column of the current row
+                            row["details"] = cloned;
                         }
 
-                        //------------SERIALIZE & CREATE RESPONSE--------------------
-                        string sJSONResponse = JsonConvert.SerializeObject(dt1);
-
-                        //create response
-                        var response = new HttpResponseMessage(HttpStatusCode.OK);
-                        response.Content = new StringContent(sJSONResponse);
-                        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-                        return response;
+                        //if no rows found in details table
+                        else
+                        {
+                            row["details"] = null;
+                        }
+                    }
 
                     }
-                    catch (MySqlException ex)
-                    {
-                        CloseConnection();
 
-                        string sJSONResponse = JsonConvert.SerializeObject(ex);
-                        //create response
-                        var response = new HttpResponseMessage(HttpStatusCode.OK);
-                        response.Content = new StringContent(sJSONResponse);
-                        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-                        return response;
-                    }
+                    //------------SERIALIZE & CREATE RESPONSE--------------------
+                    string sJSONResponse = JsonConvert.SerializeObject(dt1);
+
+                    //create response
+                    var response = new HttpResponseMessage(HttpStatusCode.OK);
+                    response.Content = new StringContent(sJSONResponse);
+                    response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                    return response;
 
                 }
+                catch (MySqlException ex)
+                {
+                    CloseConnection();
 
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    string sJSONResponse = JsonConvert.SerializeObject(ex);
+                    //create response
+                    var response = new HttpResponseMessage(HttpStatusCode.OK);
+                    response.Content = new StringContent(sJSONResponse);
+                    response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                    return response;
+                }
+
 
             }
 
