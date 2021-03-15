@@ -34,7 +34,7 @@ namespace EstimateRESTClient
                 //-----------------GET LATEST TIMESTAMP FROM TABLE----------
                 string timestamp = getLastUpdatedTime("schema1.local_last_date"); //dd-MM-yyyy HH:mm:ss
                 //convert to the right format
-                timestamp=DateTime.ParseExact("01-01-2021 00:00:00", "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                timestamp=DateTime.ParseExact(timestamp, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
                 Console.WriteLine(timestamp);
 
 
@@ -105,7 +105,7 @@ namespace EstimateRESTClient
 
                         //print datatables for verification
                         print_results(dt_master);
-                        //print_results(dt_details);
+                        print_results(dt_details);
 
                     
                         if (dt_master.Rows.Count > 0)
@@ -118,10 +118,10 @@ namespace EstimateRESTClient
                             insertDateDb(last_DT_UPDATED, "schema1.local_last_date");
 
                             //insert datatbles to database tables
-                            insertDataTable(dt_master, "schema1.local_estimate_master");
-                            Console.WriteLine("Table 1 copied to db");
-                            insertDataTable(dt_details, "schema1.local_estimate_item_details");
-                            Console.WriteLine("Table 2 copied to db");
+                            //insertDataTable(dt_master, "schema1.local_estimate_master");
+                            //Console.WriteLine("Table 1 copied to db");
+                            //insertDataTable(dt_details, "schema1.local_estimate_item_details");
+                            //Console.WriteLine("Table 2 copied to db");
                         }
 
                     }
@@ -227,8 +227,6 @@ namespace EstimateRESTClient
                 return false;
             }
         }
-
-
 
         private static string getLastUpdatedTime(string tableName)
         {
