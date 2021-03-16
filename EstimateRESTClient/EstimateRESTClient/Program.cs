@@ -35,7 +35,7 @@ namespace EstimateRESTClient
                 string timestamp = getLastUpdatedTime("schema1.local_last_date"); //dd-MM-yyyy HH:mm:ss
                 //convert to the right format
                 timestamp=DateTime.ParseExact(timestamp, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                Console.WriteLine(timestamp);
+                Console.WriteLine("TimeStamp from DateTime table: "+ timestamp);
 
 
                 //-----------------CALL API & GET RESPONSE-------------------------
@@ -66,20 +66,13 @@ namespace EstimateRESTClient
                             foreach (var masterCol in masterRow.Properties()) //iterate over cols in the row
                             {
                                 // include values column wise
-
-                                //if not "details" col, then add (key,value) to the master row
-                                /*if ((masterCol.Name == "ESTIMATE_SANCTION_DATE") && (masterCol.Value!= null)) //02/09/2011 00:00:00
+                                
+                                //if ESTIMATE_SANCTION_DATE is not null, convert date to correct db format
+                                if ((masterCol.Name == "ESTIMATE_SANCTION_DATE") && !(masterCol.Value.ToString() == String.Empty)) //02/09/2011 00:00:00
                                 {
-                                    Console.WriteLine(masterCol.Value.ToString());
-                                    string ts = DateTime.ParseExact(masterCol.Value.ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                                    //Console.WriteLine(masterCol.Name +" "+ masterCol.Value);
+                                    string ts = DateTime.ParseExact(masterCol.Value.ToString(), "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                                     newMasterRow.Add(masterCol.Name, ts);
-                                }
-
-                                else*/ 
-                                if (masterCol.Name != "details")
-                                {
-                                    newMasterRow.Add(masterCol.Name, masterCol.Value);
-                                    Console.WriteLine(masterCol.Name + masterCol.Value);
                                 }
 
                                 //if "details" col, then add all rows to details JArray
@@ -95,6 +88,12 @@ namespace EstimateRESTClient
                                         newDetailsJarray.Add(newDetailsRow);
                                     }
                                 }
+
+                                //if not "details" col, then add (key,value) to the master row
+                                else //if (masterCol.Name != "details")
+                                {
+                                    newMasterRow.Add(masterCol.Name, masterCol.Value);
+                                }
                             }
                             newMasterJarray.Add(newMasterRow);
                         }
@@ -104,8 +103,8 @@ namespace EstimateRESTClient
                         DataTable dt_details = JsonConvert.DeserializeObject<DataTable>(newDetailsJarray.ToString());
 
                         //print datatables for verification
-                        print_results(dt_master);
-                        print_results(dt_details);
+                        //print_results(dt_master);
+                        //print_results(dt_details);
 
                     
                         if (dt_master.Rows.Count > 0)
@@ -113,15 +112,15 @@ namespace EstimateRESTClient
                             //get latest date from master datatable
                             var last_DT_UPDATED = (dt_master.Select("DT_UPDATED=MAX(DT_UPDATED)").First())["DT_UPDATED"].ToString();
                             last_DT_UPDATED = DateTime.ParseExact(last_DT_UPDATED, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                            Console.WriteLine(last_DT_UPDATED);
+                            Console.WriteLine("Maximum Last_Updated TimeStamp from data recieved: "+ last_DT_UPDATED);
                             //insert date to date table
                             insertDateDb(last_DT_UPDATED, "schema1.local_last_date");
 
                             //insert datatbles to database tables
-                            //insertDataTable(dt_master, "schema1.local_estimate_master");
-                            //Console.WriteLine("Table 1 copied to db");
-                            //insertDataTable(dt_details, "schema1.local_estimate_item_details");
-                            //Console.WriteLine("Table 2 copied to db");
+                            insertDataTable(dt_master, "schema1.local_estimate_master");
+                            Console.WriteLine("Table 1 copied to db");
+                            insertDataTable(dt_details, "schema1.local_estimate_item_details");
+                            Console.WriteLine("Table 2 copied to db");
                         }
 
                     }
@@ -130,6 +129,8 @@ namespace EstimateRESTClient
                     {
                         Console.WriteLine("No new entries found");
                     }
+
+                    Console.WriteLine("Done");
                 }
 
                 else
