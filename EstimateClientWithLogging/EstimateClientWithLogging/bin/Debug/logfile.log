@@ -1,0 +1,5 @@
+2021-03-22 13:15:18,776 [1] INFO  EstimateClientWithLogging.Program TimeStamp from DateTime table: 20210210114006
+2021-03-22 13:15:19,134 [5] INFO  EstimateClientWithLogging.Program Maximum Last_Updated TimeStamp from data recieved: 2021-02-18 11:40:06
+2021-03-22 13:15:19,465 [5] INFO  EstimateClientWithLogging.Program Table 1 copied
+2021-03-22 13:15:19,737 [5] INFO  EstimateClientWithLogging.Program Tbale 2 copied
+2021-03-22 13:15:19,742 [5] INFO  EstimateClientWithLogging.Program Done

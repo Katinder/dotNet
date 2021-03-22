@@ -1,0 +1,16 @@
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\EstimateClientWithLogging.exe.config
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\EstimateClientWithLogging.exe
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\EstimateClientWithLogging.pdb
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\log4net.dll
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\MySql.Data.dll
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\Newtonsoft.Json.dll
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\Z.BulkOperations.dll
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\log4net.xml
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\MySql.Data.xml
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\Newtonsoft.Json.xml
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\bin\Debug\Z.BulkOperations.xml
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\obj\Debug\EstimateClientWithLogging.csprojAssemblyReference.cache
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\obj\Debug\EstimateClientWithLogging.csproj.CoreCompileInputs.cache
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\obj\Debug\EstimateClientWithLogging.csproj.CopyComplete
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\obj\Debug\EstimateClientWithLogging.exe
+C:\Users\HP\source\repos\EstimateClientWithLogging\EstimateClientWithLogging\obj\Debug\EstimateClientWithLogging.pdb
