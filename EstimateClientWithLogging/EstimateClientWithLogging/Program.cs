@@ -23,6 +23,7 @@ using Z.BulkOperations;
 //2. a. declare instance of logger object
 //   b. set log4net acc to app.config settings
 //   c. log something
+
 namespace EstimateClientWithLogging
 {
     class Program
@@ -30,7 +31,7 @@ namespace EstimateClientWithLogging
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
 
-        static string localDate = "20210202160000";
+        //static string localDate = "20210202160000";
         static string locstring = "ALL";
 
         static HttpClient client = new HttpClient();
@@ -49,13 +50,13 @@ namespace EstimateClientWithLogging
                 //-----------------GET LATEST TIMESTAMP FROM TABLE----------
                 string timestamp = getLastUpdatedTime("schema1.local_last_date"); //dd-MM-yyyy HH:mm:ss
                 //convert to the right format
-                timestamp = "20210210114006";//DateTime.ParseExact(timestamp, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                timestamp = DateTime.ParseExact("17-02-2021 16:48:21", "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
                 //Console.WriteLine("TimeStamp from DateTime table: " + timestamp);
                 _log.Info("TimeStamp from DateTime table: " + timestamp);
 
                 //-----------------CALL API & GET RESPONSE-------------------------
                 //get response form GET method
-                var responseTask = await client.GetAsync($"https://localhost:44385/api/Date?timestamp={timestamp}&loc={locstring}");
+                var responseTask = await client.GetAsync($"https://mis.pstcl.org/estimate/api/Date?timestamp={timestamp}&loc={locstring}");
 
                 //if reponse is OK
                 if (responseTask.IsSuccessStatusCode)
@@ -67,6 +68,9 @@ namespace EstimateClientWithLogging
 
                     //parse the string into a JArray object
                     JArray jArray = JArray.Parse(s);
+
+                    //log object
+                    string logEstimateCodeList= "";
 
                     if (jArray.Count > 0)
                     {
@@ -100,6 +104,7 @@ namespace EstimateClientWithLogging
                                         {
                                             newDetailsRow.Add(detailsCol.Name, detailsCol.Value);
                                         }
+
                                         newDetailsJarray.Add(newDetailsRow);
                                     }
                                 }
@@ -107,7 +112,13 @@ namespace EstimateClientWithLogging
                                 //if not "details" col, then add (key,value) to the master row
                                 else //if (masterCol.Name != "details")
                                 {
+                                    if(masterCol.Name=="ESTIMATE_CODE")
+                                    {
+                                        logEstimateCodeList += "," + masterCol.Value.ToString();
+                                    }
+
                                     newMasterRow.Add(masterCol.Name, masterCol.Value);
+
                                 }
                             }
                             newMasterJarray.Add(newMasterRow);
@@ -125,6 +136,9 @@ namespace EstimateClientWithLogging
                         //_log.Info(newMasterJarray.ToString());
                         //_log.Info(newDetailsJarray.ToString());
 
+                        //log estimate codes copied
+                        _log.Info("Estimate codes received from the api: " + logEstimateCodeList.Remove(0, 1));
+
                         if (dt_master.Rows.Count > 0)
                         {
                             //get latest date from master datatable
@@ -132,6 +146,7 @@ namespace EstimateClientWithLogging
                             last_DT_UPDATED = DateTime.ParseExact(last_DT_UPDATED, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                             _log.Info("Maximum Last_Updated TimeStamp from data recieved: " + last_DT_UPDATED);
                             //Console.WriteLine("Maximum Last_Updated TimeStamp from data recieved: " + last_DT_UPDATED);
+                            
                             //insert date to date table
                             insertDateDb(last_DT_UPDATED, "schema1.local_last_date");
 
@@ -140,7 +155,7 @@ namespace EstimateClientWithLogging
                             _log.Info("Table 1 copied");
                             //Console.WriteLine("Table 1 copied to db");
                             insertDataTable(dt_details, "schema1.local_estimate_item_details");
-                            _log.Info("Tbale 2 copied");
+                            _log.Info("Table 2 copied");
                             //Console.WriteLine("Table 2 copied to db");
                         }
 
@@ -164,7 +179,7 @@ namespace EstimateClientWithLogging
             catch (Exception e)
             {
                 _log.Error(e.Message);
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
             }
 
            // Console.ReadKey();
@@ -188,7 +203,8 @@ namespace EstimateClientWithLogging
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ex raised at insertDataTable function: " + ex.Message);
+                _log.Error("Ex raised at insertDataTable function: " + ex.Message);
+                //Console.WriteLine("Ex raised at insertDataTable function: " + ex.Message);
             }
 
         }
@@ -233,7 +249,8 @@ namespace EstimateClientWithLogging
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine(ex.Message);
+                _log.Error("Exception at Close-Connection: "+ex.Message);
+                //Console.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -248,7 +265,8 @@ namespace EstimateClientWithLogging
             }
             catch (MySqlException ex)
             {
-                Console.WriteLine(ex.Message);
+                _log.Error("Exception at Open-Connection: " + ex.Message);
+                //Console.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -272,7 +290,8 @@ namespace EstimateClientWithLogging
                 catch (MySqlException ex)
                 {
                     CloseConnection();
-                    Console.WriteLine(ex.Message);
+                    _log.Error("Exception at getLastUpdatedTime function: " + ex.Message);
+                    //Console.WriteLine(ex.Message);
                     return null;
                 }
             }
@@ -299,7 +318,8 @@ namespace EstimateClientWithLogging
                 }
                 catch (MySqlException ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    _log.Error("Exception at insertDateDb row deletion: " + ex.Message);
+                    //Console.WriteLine(ex.Message);
                 }
 
                 CloseConnection();
@@ -318,7 +338,8 @@ namespace EstimateClientWithLogging
                 }
                 catch (MySqlException ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    _log.Error("Exception at insertDateDb row insertion: " + ex.Message);
+                    //Console.WriteLine(ex.Message);
                 }
 
                 CloseConnection();
